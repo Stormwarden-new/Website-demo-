@@ -29,24 +29,52 @@
       min-width: 160px;
     }
 
-    .code-area {
-      width: 100%;
-      min-height: 320px;
+    .editor-wrapper {
+      display: flex;
       background-color: #161b22;
-      color: #a5d6ff;
       border: 1px solid #30363d;
       border-radius: 8px;
+      overflow: hidden;
+      height: 360px;
+    }
+
+    .editor-wrapper:focus-within {
+      border-color: #58a6ff;
+    }
+
+    .line-numbers {
+      width: 48px;
+      padding: 1rem 0.6rem 1rem 0.25rem;
+      background-color: #0d1117;
+      border-right: 1px solid #30363d;
+      color: #6e7681;
+      font-family: Consolas, Monaco, "Courier New", monospace;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      text-align: right;
+      user-select: none;
+      overflow: hidden;
+      white-space: pre;
+    }
+
+    .code-area {
+      flex: 1;
+      background-color: #161b22;
+      color: #a5d6ff;
+      border: none;
       padding: 1rem;
       font-family: Consolas, Monaco, "Courier New", monospace;
       font-size: 0.95rem;
       line-height: 1.5;
-      resize: vertical;
+      resize: none;
       tab-size: 4;
+      white-space: pre;
+      overflow-x: auto;
+      overflow-y: auto;
     }
 
     .code-area:focus {
       outline: none;
-      border-color: #58a6ff;
     }
 
     .button-group {
@@ -124,8 +152,11 @@
       </select>
     </div>
 
-    <textarea id="codeEditor" class="code-area" spellcheck="false" placeholder="Write your code here..."># Write your Python code here
+    <div class="editor-wrapper">
+      <div id="lineNumbers" class="line-numbers">1</div>
+      <textarea id="codeEditor" class="code-area" spellcheck="false" placeholder="Write your code here..."># Write your Python code here
 print("Hello from CodeHub!")</textarea>
+    </div>
 
     <div class="button-group">
       <button class="btn btn-primary" onclick="downloadCode()">Download File</button>
@@ -143,6 +174,9 @@ print("Hello from CodeHub!")</textarea>
   </footer>
 
   <script>
+    const editor = document.getElementById("codeEditor");
+    const lineNumbers = document.getElementById("lineNumbers");
+
     const templates = {
       ".py": '# Python Program\nprint("Hello from CodeHub!")\n',
       ".c": '#include <stdio.h>\n\nint main() {\n    printf("Hello from CodeHub!\\n");\n    return 0;\n}\n',
@@ -150,6 +184,23 @@ print("Hello from CodeHub!")</textarea>
       ".pas": "program MyProgram;\nbegin\n  writeln('Hello from CodeHub!');\nend.\n",
       ".txt": "Write your notes or pseudocode here...\n"
     };
+
+    function updateLineNumbers() {
+      const totalLines = editor.value.split("\n").length;
+      let numbers = "";
+      for (let i = 1; i <= totalLines; i++) {
+        numbers += i + "\n";
+      }
+      lineNumbers.textContent = numbers;
+    }
+
+    // Keep line numbers aligned when scrolling vertically
+    editor.addEventListener("scroll", function() {
+      lineNumbers.scrollTop = editor.scrollTop;
+    });
+
+    // Recalculate line numbers whenever code changes
+    editor.addEventListener("input", updateLineNumbers);
 
     function showStatus(text) {
       const msg = document.getElementById("statusMsg");
@@ -159,18 +210,17 @@ print("Hello from CodeHub!")</textarea>
 
     function loadTemplate() {
       const ext = document.getElementById("language").value;
-      const editor = document.getElementById("codeEditor");
       if (editor.value.trim() === "" || Object.values(templates).includes(editor.value)) {
         editor.value = templates[ext];
+        updateLineNumbers();
       }
     }
 
     function downloadCode() {
-      const code = document.getElementById("codeEditor").value;
+      const code = editor.value;
       let name = document.getElementById("filename").value.trim() || "my_program";
       const ext = document.getElementById("language").value;
 
-      // Remove extension if user already typed it
       if (name.endsWith(ext)) {
         name = name.slice(0, -ext.length);
       }
@@ -196,34 +246,39 @@ print("Hello from CodeHub!")</textarea>
 
       const reader = new FileReader();
       reader.onload = function(e) {
-        document.getElementById("codeEditor").value = e.target.result;
+        editor.value = e.target.result;
         document.getElementById("filename").value = file.name.replace(/\.[^/.]+$/, "");
+        updateLineNumbers();
         showStatus("Loaded '" + file.name + "' into the editor.");
       };
       reader.readAsText(file);
     }
 
     function copyCode() {
-      const editor = document.getElementById("codeEditor");
       navigator.clipboard.writeText(editor.value);
       showStatus("Code copied to clipboard!");
     }
 
     function clearEditor() {
-      document.getElementById("codeEditor").value = "";
+      editor.value = "";
+      updateLineNumbers();
       showStatus("Editor cleared.");
     }
 
-    // Allow Tab key indentation inside the textarea
-    document.getElementById("codeEditor").addEventListener("keydown", function(e) {
+    // Allow Tab key indentation inside the editor
+    editor.addEventListener("keydown", function(e) {
       if (e.key === "Tab") {
         e.preventDefault();
         const start = this.selectionStart;
         const end = this.selectionEnd;
         this.value = this.value.substring(0, start) + "    " + this.value.substring(end);
         this.selectionStart = this.selectionEnd = start + 4;
+        updateLineNumbers();
       }
     });
+
+    // Initialize line numbers on page load
+    updateLineNumbers();
   </script>
 </body>
 </html>
