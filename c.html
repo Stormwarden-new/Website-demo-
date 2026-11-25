@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C Language | CodeHub</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="index.html" class="logo">CodeHub</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="python.html">Python</a></li>
+        <li><a href="c.html" class="active">C</a></li>
+        <li><a href="cpp.html">C++</a></li>
+        <li><a href="pascal.html">Pascal</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <h1>C Programming</h1>
+    <p>Developed by Dennis Ritchie in 1972 at Bell Labs, <strong>C</strong> is a compiled, procedural language that sits close to computer hardware. Operating systems like Linux and Windows, as well as embedded microcontrollers, rely heavily on C.</p>
+
+    <h2>Key Terms &amp; Symbols</h2>
+    <table>
+      <tr>
+        <th>Symbol / Term</th>
+        <th>Meaning &amp; Usage</th>
+      </tr>
+      <tr>
+        <td><code>;</code></td>
+        <td><strong>Semicolon:</strong> Marks the end of every statement in C. Forgetting it causes a compiler error.</td>
+      </tr>
+      <tr>
+        <td><code>{ }</code></td>
+        <td><strong>Curly Braces:</strong> Group statements together into functions, loops, or conditionals.</td>
+      </tr>
+      <tr>
+        <td><code>#include</code></td>
+        <td><strong>Preprocessor Directive:</strong> Imports external header libraries (like <code>&lt;stdio.h&gt;</code> for input/output) before compiling.</td>
+      </tr>
+      <tr>
+        <td><code>*</code> and <code>&amp;</code></td>
+        <td><strong>Pointers &amp; Addresses:</strong> <code>&amp;</code> gets a variable's memory address; <code>*</code> accesses the value stored at a memory address.</td>
+      </tr>
+      <tr>
+        <td><code>Compiler</code></td>
+        <td>A tool (like GCC) that translates your entire C code into machine-readable binary before it runs.</td>
+      </tr>
+    </table>
+
+    <h2>Lessons: Writing C Code</h2>
+
+    <div class="lesson-box">
+      <h3>Lesson 1: Program Structure &amp; Data Types</h3>
+      <p>Every C program starts running inside the <code>main()</code> function, and every variable must have an explicit data type like <code>int</code> (integer) or <code>float</code> (decimal).</p>
+      <pre><code>#include &lt;stdio.h&gt;
+
+int main() {
+    int year = 1972;
+    printf("C was created in %d.\n", year);
+    return 0; // Signals the program ended successfully
+}</code></pre>
+    </div>
+
+    <div class="lesson-box">
+      <h3>Lesson 2: User Input &amp; Loops</h3>
+      <p>Use <code>scanf()</code> with the <code>&amp;</code> symbol to read input into a variable's memory location.</p>
+      <pre><code>#include &lt;stdio.h&gt;
+
+int main() {
+    int i;
+    for (i = 1; i &lt;= 5; i++) {
+        printf("Step %d\n", i);
+    }
+    return 0;
+}</code></pre>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 CodeHub &mdash; C Programming Guide</p>
+  </footer>
+</body>
+</html>
