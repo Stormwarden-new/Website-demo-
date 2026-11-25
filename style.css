@@ -1,0 +1,172 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  background-color: #0d1117;
+  color: #c9d1d9;
+}
+
+header {
+  background-color: #161b22;
+  border-bottom: 1px solid #30363d;
+  padding: 1rem 2rem;
+  position: sticky;
+  top: 0;
+}
+
+nav {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logo {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #58a6ff;
+  text-decoration: none;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+}
+
+.nav-links a {
+  color: #c9d1d9;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+  background-color: #21262d;
+  color: #58a6ff;
+}
+
+main {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}
+
+h1 {
+  color: #ffffff;
+  font-size: 2.2rem;
+  margin-bottom: 0.75rem;
+}
+
+h2 {
+  color: #58a6ff;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid #30363d;
+  padding-bottom: 0.3rem;
+}
+
+h3 {
+  color: #e6edf3;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.card {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 1.25rem;
+  text-decoration: none;
+  color: #c9d1d9;
+  display: block;
+}
+
+.card:hover {
+  border-color: #58a6ff;
+}
+
+.card h3 {
+  margin-top: 0;
+  color: #58a6ff;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  background-color: #161b22;
+}
+
+th, td {
+  border: 1px solid #30363d;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+th {
+  background-color: #21262d;
+  color: #ffffff;
+}
+
+code {
+  background-color: #21262d;
+  color: #ff7b72;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-family: Consolas, Monaco, "Courier New", monospace;
+}
+
+pre {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+pre code {
+  background: none;
+  color: #a5d6ff;
+  padding: 0;
+}
+
+.lesson-box {
+  background-color: #161b22;
+  border-left: 4px solid #238636;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+  border-radius: 0 8px 8px 0;
+}
+
+footer {
+  text-align: center;
+  padding: 2rem;
+  margin-top: 4rem;
+  border-top: 1px solid #30363d;
+  color: #8b949e;
+  font-size: 0.9rem;
+}
