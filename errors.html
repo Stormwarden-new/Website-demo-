@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Errors &amp; Debugging | CodeHub</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="index.html" class="logo">CodeHub</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="python.html">Python</a></li>
+        <li><a href="c.html">C</a></li>
+        <li><a href="cpp.html">C++</a></li>
+        <li><a href="pascal.html">Pascal</a></li>
+        <li><a href="errors.html" class="active">Errors &amp; Debugging</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Programming Errors &amp; Debugging</h1>
+    <p>Even experienced programmers encounter mistakes when writing software. Understanding the three main categories of programming errors—and how to systematically remove them—is an essential skill in every coding language.</p>
+
+    <h2>Types of Programming Errors</h2>
+    <table>
+      <tr>
+        <th>Error Type</th>
+        <th>Definition</th>
+        <th>When It Happens</th>
+      </tr>
+      <tr>
+        <td><strong>Syntax Error</strong></td>
+        <td>An error in how the statements in source code are written in a particular program.</td>
+        <td>Before the program runs (caught by the compiler or interpreter).</td>
+      </tr>
+      <tr>
+        <td><strong>Logic Error</strong></td>
+        <td>A mistake in the design of the program.</td>
+        <td>While the program runs (the program finishes without crashing, but produces the wrong result).</td>
+      </tr>
+      <tr>
+        <td><strong>Run-Time Error</strong></td>
+        <td>A program error that occurs during program execution.</td>
+        <td>While the program is actively running (often causing it to freeze or crash).</td>
+      </tr>
+    </table>
+
+    <h2>Detailed Breakdown &amp; Examples</h2>
+
+    <div class="lesson-box">
+      <h3>1. Syntax Error</h3>
+      <p><strong>Definition:</strong> An error in how the statements in source code are written in a particular program. Just like grammar rules in human languages, every coding language has strict punctuation and keyword rules.</p>
+      <p><strong>Example:</strong> Forgetting to place a semicolon (<code>;</code>) at the end of a statement in C or C++.</p>
+      <pre><code>// Incorrect C++ code (missing semicolon on line 4)
+#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; "Hello World"   // Syntax Error: expected ';' before 'return'
+    return 0;
+}</code></pre>
+    </div>
+
+    <div class="lesson-box">
+      <h3>2. Logic Error</h3>
+      <p><strong>Definition:</strong> A mistake in the design of the program. The code follows all syntax rules and runs from start to finish without crashing, but flawed reasoning causes it to behave incorrectly.</p>
+      <p><strong>Example:</strong> Using the wrong comparison operator so that a system treats 100% safety as a hazard while marking 40% safety as secure.</p>
+      <pre><code># Incorrect Python logic (using &lt; instead of &gt;=)
+safety_level = 100
+
+if safety_level &lt; 50:
+    print("Status: Secure")   # 40% triggers this!
+else:
+    print("Status: Hazard")   # 100% triggers this!</code></pre>
+    </div>
+
+    <div class="lesson-box">
+      <h3>3. Run-Time Error</h3>
+      <p><strong>Definition:</strong> A program error that occurs during program execution. The syntax is valid, so the program starts running normally, but it encounters an impossible operation while executing.</p>
+      <p><strong>Example:</strong> Attempting to divide a number by zero (or asking the user for a number and receiving text instead).</p>
+      <pre><code># Valid syntax, but crashes during execution
+total_points = 100
+players = 0
+
+average = total_points / players  # Run-Time Error: ZeroDivisionError</code></pre>
+    </div>
+
+    <h2>What is Debugging?</h2>
+    <p><strong>Debugging</strong> is the process of finding and removing errors from computer hardware and software.</p>
+    <p>Common debugging techniques include:</p>
+    <ul style="margin-left: 1.5rem; margin-bottom: 1.5rem;">
+      <li><strong>Reading Error Messages:</strong> Compilers and interpreters usually report the exact line number where a syntax or run-time error occurred.</li>
+      <li><strong>Print Tracing:</strong> Temporarily printing variable values at different points in the program to spot where a logic error changes a value unexpectedly.</li>
+      <li><strong>Step-by-Step Execution:</strong> Using a debugger tool to pause code line by line and inspect memory and variables in real time.</li>
+    </ul>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 CodeHub &mdash; Errors &amp; Debugging Guide</p>
+  </footer>
+</body>
+</html>
