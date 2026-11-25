@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Python | CodeHub</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="index.html" class="logo">CodeHub</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="python.html" class="active">Python</a></li>
+        <li><a href="c.html">C</a></li>
+        <li><a href="cpp.html">C++</a></li>
+        <li><a href="pascal.html">Pascal</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Python Programming</h1>
+    <p>Created by Guido van Rossum in 1991, <strong>Python</strong> is an interpreted, high-level programming language famous for its English-like syntax. Instead of curly braces or semicolons, Python uses indentation (spaces) to organize code blocks.</p>
+
+    <h2>Key Terms &amp; Symbols</h2>
+    <table>
+      <tr>
+        <th>Symbol / Term</th>
+        <th>Meaning &amp; Usage</th>
+      </tr>
+      <tr>
+        <td><code>#</code></td>
+        <td><strong>Comment:</strong> Everything after <code>#</code> on that line is ignored by Python and used for human notes.</td>
+      </tr>
+      <tr>
+        <td><code>=</code></td>
+        <td><strong>Assignment Operator:</strong> Stores a value inside a variable (e.g., <code>age = 20</code>).</td>
+      </tr>
+      <tr>
+        <td><code>:</code> and Indentation</td>
+        <td><strong>Code Block:</strong> A colon starts a block (like an <code>if</code> statement or loop), and 4 spaces indent the lines inside it.</td>
+      </tr>
+      <tr>
+        <td><code>def</code></td>
+        <td><strong>Function Definition:</strong> Keyword used to create a reusable block of code.</td>
+      </tr>
+      <tr>
+        <td><code>Interpreter</code></td>
+        <td>A program that reads and executes Python code line by line without needing a separate compile step.</td>
+      </tr>
+    </table>
+
+    <h2>Lessons: Writing Python Code</h2>
+
+    <div class="lesson-box">
+      <h3>Lesson 1: Output &amp; Variables</h3>
+      <p>Use the <code>print()</code> function to display text on the screen, and store data in variables without declaring their type.</p>
+      <pre><code># Storing information in variables
+language = "Python"
+version = 3
+
+# Displaying output using an f-string
+print(f"Welcome to {language} {version}!")</code></pre>
+    </div>
+
+    <div class="lesson-box">
+      <h3>Lesson 2: Decisions &amp; Loops</h3>
+      <p>Use <code>if</code>/<code>else</code> to make decisions and <code>for</code> loops to repeat actions.</p>
+      <pre><code>score = 85
+
+if score >= 50:
+    print("You passed!")
+else:
+    print("Try again.")
+
+# Loop from 1 to 3
+for number in range(1, 4):
+    print("Count:", number)</code></pre>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 CodeHub &mdash; Python Guide</p>
+  </footer>
+</body>
+</html>
