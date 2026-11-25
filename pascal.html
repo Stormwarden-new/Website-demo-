@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pascal Language | CodeHub</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="index.html" class="logo">CodeHub</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="python.html">Python</a></li>
+        <li><a href="c.html">C</a></li>
+        <li><a href="cpp.html">C++</a></li>
+        <li><a href="pascal.html" class="active">Pascal</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Pascal Programming</h1>
+    <p>Designed by Niklaus Wirth in 1970 and named after mathematician Blaise Pascal, <strong>Pascal</strong> was built to encourage structured programming and strict data typing. It remains widely used in computer science education and legacy desktop software (via Delphi/Free Pascal).</p>
+
+    <h2>Key Terms &amp; Symbols</h2>
+    <table>
+      <tr>
+        <th>Symbol / Term</th>
+        <th>Meaning &amp; Usage</th>
+      </tr>
+      <tr>
+        <td><code>:=</code></td>
+        <td><strong>Assignment Operator:</strong> Assigns a value to a variable (distinct from <code>=</code>, which checks equality).</td>
+      </tr>
+      <tr>
+        <td><code>begin ... end</code></td>
+        <td><strong>Block Keywords:</strong> Used instead of curly braces to mark the start and end of code blocks.</td>
+      </tr>
+      <tr>
+        <td><code>end.</code></td>
+        <td><strong>Program Terminator:</strong> The final <code>end</code> of a Pascal program always ends with a period (<code>.</code>).</td>
+      </tr>
+      <tr>
+        <td><code>var</code></td>
+        <td><strong>Variable Declaration:</strong> Section at the top of a program where every variable and its type must be declared beforehand.</td>
+      </tr>
+      <tr>
+        <td><code>{ }</code> or <code>(* *)</code></td>
+        <td><strong>Comments:</strong> Text enclosed inside curly braces is ignored by the Pascal compiler.</td>
+      </tr>
+    </table>
+
+    <h2>Lessons: Writing Pascal Code</h2>
+
+    <div class="lesson-box">
+      <h3>Lesson 1: Structure &amp; Variables</h3>
+      <p>Notice how variables are declared under <code>var</code> before <code>begin</code>, and values are assigned using <code>:=</code>.</p>
+      <pre><code>program Greeting;
+var
+  userName: string;
+  age: integer;
+begin
+  userName := 'Alex';
+  age := 18;
+  writeln('Hello, ', userName, '! You are ', age, ' years old.');
+end.</code></pre>
+    </div>
+
+    <div class="lesson-box">
+      <h3>Lesson 2: Conditionals &amp; For Loops</h3>
+      <p>Pascal reads almost like structured English using <code>if ... then ... else</code> and <code>for ... to ... do</code>.</p>
+      <pre><code>program Counting;
+var
+  i: integer;
+begin
+  for i := 1 to 5 do
+  begin
+    if i mod 2 = 0 then
+      writeln(i, ' is even')
+    else
+      writeln(i, ' is odd');
+  end;
+end.</code></pre>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 CodeHub &mdash; Pascal Programming Guide</p>
+  </footer>
+</body>
+</html>
