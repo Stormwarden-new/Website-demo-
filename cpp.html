@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C++ Language | CodeHub</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="index.html" class="logo">CodeHub</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="python.html">Python</a></li>
+        <li><a href="c.html">C</a></li>
+        <li><a href="cpp.html" class="active">C++</a></li>
+        <li><a href="pascal.html">Pascal</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <h1>C++ Programming</h1>
+    <p>Created by Bjarne Stroustrup in 1985 as "C with Classes," <strong>C++</strong> builds directly on C while adding <strong>Object-Oriented Programming (OOP)</strong> and modern standard libraries. It powers AAA video games, 3D engines, and high-frequency trading systems.</p>
+
+    <h2>Key Terms &amp; Symbols</h2>
+    <table>
+      <tr>
+        <th>Symbol / Term</th>
+        <th>Meaning &amp; Usage</th>
+      </tr>
+      <tr>
+        <td><code>::</code></td>
+        <td><strong>Scope Resolution Operator:</strong> Accesses items inside a namespace or class (e.g., <code>std::cout</code>).</td>
+      </tr>
+      <tr>
+        <td><code>&lt;&lt;</code> and <code>&gt;&gt;</code></td>
+        <td><strong>Stream Operators:</strong> <code>&lt;&lt;</code> sends output to the screen (<code>cout</code>); <code>&gt;&gt;</code> reads keyboard input (<code>cin</code>).</td>
+      </tr>
+      <tr>
+        <td><code>//</code></td>
+        <td><strong>Single-Line Comment:</strong> Ignores everything after <code>//</code> on that line.</td>
+      </tr>
+      <tr>
+        <td><code>class</code></td>
+        <td><strong>Blueprint:</strong> Defines a custom data type bundling variables (attributes) and functions (methods) together.</td>
+      </tr>
+      <tr>
+        <td><code>Namespace</code></td>
+        <td>A container (like <code>std</code>) that prevents naming conflicts in large projects.</td>
+      </tr>
+    </table>
+
+    <h2>Lessons: Writing C++ Code</h2>
+
+    <div class="lesson-box">
+      <h3>Lesson 1: Input and Output Streams</h3>
+      <p>C++ uses the <code>&lt;iostream&gt;</code> library and <code>std::cout</code> for clean text output.</p>
+      <pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::string topic = "C++";
+    std::cout &lt;&lt; "Mastering " &lt;&lt; topic &lt;&lt; "!" &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+    </div>
+
+    <div class="lesson-box">
+      <h3>Lesson 2: Classes &amp; Objects</h3>
+      <p>A <code>class</code> lets you model real-world objects in your code.</p>
+      <pre><code>#include &lt;iostream&gt;
+
+class Player {
+public:
+    int health = 100;
+    void takeDamage(int amount) {
+        health -= amount;
+    }
+};
+
+int main() {
+    Player hero;
+    hero.takeDamage(25);
+    std::cout &lt;&lt; "Remaining health: " &lt;&lt; hero.health &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 CodeHub &mdash; C++ Programming Guide</p>
+  </footer>
+</body>
+</html>
