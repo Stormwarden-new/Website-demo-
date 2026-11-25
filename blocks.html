@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Block Coding Basics | CodeHub</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Visual Block Styles */
+    .block-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      margin: 1rem 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .block {
+      padding: 0.6rem 1rem;
+      border-radius: 6px;
+      color: #ffffff;
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+      display: inline-block;
+      user-select: none;
+    }
+
+    .block-hat {
+      border-radius: 18px 18px 6px 6px;
+    }
+
+    .block-indent {
+      margin-left: 1.5rem;
+    }
+
+    .block-event { background-color: #d97706; }    /* Gold/Amber */
+    .block-motion { background-color: #2563eb; }   /* Blue */
+    .block-looks { background-color: #7c3aed; }    /* Purple */
+    .block-control { background-color: #ea580c; }  /* Orange */
+    .block-var { background-color: #db2777; }      /* Pink/Magenta */
+
+    .block-slot {
+      background-color: rgba(255, 255, 255, 0.22);
+      padding: 0.1rem 0.45rem;
+      border-radius: 10px;
+      margin: 0 0.2rem;
+    }
+
+    /* Drag & Drop Playground Styles */
+    .playground-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .palette-box, .workspace-box {
+      background-color: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 1rem;
+    }
+
+    .draggable-block {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 0.55rem;
+      cursor: grab;
+      touch-action: none;
+      transition: transform 0.12s, opacity 0.12s;
+    }
+
+    .draggable-block:active {
+      cursor: grabbing;
+    }
+
+    .draggable-block.dragging {
+      opacity: 0.5;
+      transform: scale(0.98);
+    }
+
+    .drop-zone {
+      min-height: 220px;
+      padding: 0.75rem;
+      border: 2px dashed #30363d;
+      border-radius: 8px;
+      background-color: #0d1117;
+      transition: border-color 0.2s, background-color 0.2s;
+    }
+
+    .drop-zone.drag-over {
+      border-color: #58a6ff;
+      background-color: rgba(88, 166, 255, 0.08);
+    }
+
+    .drop-hint {
+      color: #6e7681;
+      font-size: 0.85rem;
+      font-weight: normal;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+    }
+
+    .remove-x {
+      background: rgba(0, 0, 0, 0.25);
+      border: none;
+      color: #ffffff;
+      border-radius: 4px;
+      padding: 0.1rem 0.45rem;
+      margin-left: 0.75rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .remove-x:hover {
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    .stage-output {
+      background-color: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-top: 1rem;
+      min-height: 90px;
+      color: #a5d6ff;
+      font-family: Consolas, Monaco, monospace;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 0.6rem;
+      margin-top: 0.75rem;
+    }
+
+    .btn-run {
+      background-color: #238636;
+      color: #fff;
+      border: none;
+      padding: 0.55rem 1.1rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-clear {
+      background-color: #21262d;
+      color: #c9d1d9;
+      border: 1px solid #30363d;
+      padding: 0.55rem 1.1rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="index.html" class="logo">CodeHub</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="blocks.html" class="active">Block Coding</a></li>
+        <li><a href="python.html">Python</a></li>
+        <li><a href="c.html">C</a></li>
+        <li><a href="cpp.html">C++</a></li>
+        <li><a href="pascal.html">Pascal</a></li>
+        <li><a href="errors.html">Errors &amp; Debugging</a></li>
+        <li><a href="editor.html">Code Editor</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Block-Based Coding Basics</h1>
+    <p>Before learning to type text commands with semicolons and brackets, <strong>block-based coding</strong> (used in platforms like Scratch and Blockly) teaches the core logic of programming using interlocking visual blocks. Because blocks only snap together when they make logical sense, you never have to worry about syntax errors.</p>
+
+    <h2>Core Concepts in Block Coding</h2>
+    <table>
+      <tr>
+        <th>Concept</th>
+        <th>Block Category</th>
+        <th>What It Does</th>
+      </tr>
+      <tr>
+        <td><strong>Events</strong></td>
+        <td>Amber Hat Blocks</td>
+        <td>Triggers when a script starts (e.g., when the Green Flag is clicked or a key is pressed).</td>
+      </tr>
+      <tr>
+        <td><strong>Sequence</strong></td>
+        <td>Stacked Blocks</td>
+        <td>Runs instructions strictly from top to bottom, one step at a time.</td>
+      </tr>
+      <tr>
+        <td><strong>Loops</strong></td>
+        <td>Orange C-Blocks</td>
+        <td>Repeats the blocks placed inside its jaws a set number of times or forever.</td>
+      </tr>
+      <tr>
+        <td><strong>Conditionals</strong></td>
+        <td>Orange If/Else Blocks</td>
+        <td>Checks whether a condition is true or false before deciding which blocks to run.</td>
+      </tr>
+      <tr>
+        <td><strong>Variables</strong></td>
+        <td>Pink Value Blocks</td>
+        <td>Stores changing numbers or text like <code>score</code> or <code>playerName</code>.</td>
+      </tr>
+    </table>
+
+    <h2>Lessons: Reading &amp; Snapping Blocks</h2>
+
+    <div class="lesson-box">
+      <h3>Lesson 1: Events &amp; Sequences</h3>
+      <p>Every block program begins with an <strong>Event</strong> block at the top. The computer executes each connected block below it in exact order:</p>
+      <div class="block-stack">
+        <div class="block block-event block-hat">when ▶ Start clicked</div>
+        <div class="block block-looks">say <span class="block-slot">Hello! Ready to code?</span> for <span class="block-slot">2</span> secs</div>
+        <div class="block block-motion">move <span class="block-slot">10</span> steps</div>
+      </div>
+    </div>
+
+    <div class="lesson-box">
+      <h3>Lesson 2: Loops &amp; Conditionals</h3>
+      <p>Instead of stacking the same block over and over, wrap it inside a <strong>repeat</strong> loop and check a condition with <strong>if / then</strong>:</p>
+      <div class="block-stack">
+        <div class="block block-event block-hat">when ▶ Start clicked</div>
+        <div class="block block-var">set <span class="block-slot">score</span> to <span class="block-slot">0</span></div>
+        <div class="block block-control">repeat <span class="block-slot">3</span> times</div>
+        <div class="block block-var block-indent">change <span class="block-slot">score</span> by <span class="block-slot">10</span></div>
+        <div class="block block-control">if <span class="block-slot">score = 30</span> then</div>
+        <div class="block block-looks block-indent">say <span class="block-slot">You Win!</span></div>
+      </div>
+    </div>
+
+    <h2>Interactive Drag-and-Drop Block Builder</h2>
+    <p>Drag blocks from the <strong>Block Palette</strong> on the left and drop them under <strong>when ▶ Run clicked</strong> on the right. Drag blocks inside your script up or down to reorder them, then tap <strong>Run Blocks</strong>.</p>
+
+    <div class="playground-grid">
+      <div class="palette-box">
+        <h3>1. Drag Blocks From Here</h3>
+        <div id="paletteList">
+          <div class="block block-looks draggable-block" draggable="true" data-type="say" data-class="block-looks">
+            <span>⋮⋮ say "Hello World!"</span>
+          </div>
+          <div class="block block-motion draggable-block" draggable="true" data-type="move" data-class="block-motion">
+            <span>⋮⋮ move 10 steps</span>
+          </div>
+          <div class="block block-var draggable-block" draggable="true" data-type="score" data-class="block-var">
+            <span>⋮⋮ change score by +10</span>
+          </div>
+          <div class="block block-control draggable-block" draggable="true" data-type="repeat" data-class="block-control">
+            <span>⋮⋮ repeat previous block 2x</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="workspace-box">
+        <h3>2. Drop Blocks Here</h3>
+        <div id="dropZone" class="drop-zone block-stack">
+          <div class="block block-event block-hat" style="width: 100%;">when ▶ Run clicked</div>
+          <div id="dropHint" class="drop-hint">⬇ Drag and drop blocks here to snap them together</div>
+        </div>
+        <div class="action-row">
+          <button class="btn-run" onclick="runBlocks()">▶ Run Blocks</button>
+          <button class="btn-clear" onclick="clearBlocks()">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="stageOutput" class="stage-output">Stage Output: Drag blocks into your script and tap "Run Blocks"...</div>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 CodeHub &mdash; Block-Based Coding Guide</p>
+  </footer>
+
+  <script>
+    const dropZone = document.getElementById("dropZone");
+    const dropHint = document.getElementById("dropHint");
+    const paletteBlocks = document.querySelectorAll("#paletteList .draggable-block");
+    let draggedItem = null;
+    let isFromPalette = false;
+
+    const labels = {
+      say: 'say "Hello World!"',
+      move: "move 10 steps",
+      score: "change score by +10",
+      repeat: "repeat previous block 2x"
+    };
+
+    function createWorkspaceBlock(type, cssClass) {
+      const el = document.createElement("div");
+      el.className = "block " + cssClass + " draggable-block workspace-item";
+      el.draggable = true;
+      el.dataset.type = type;
+      el.dataset.class = cssClass;
+
+      const textSpan = document.createElement("span");
+      textSpan.textContent = "⋮⋮ " + labels[type];
+
+      const removeBtn = document.createElement("button");
+      removeBtn.className = "remove-x";
+      removeBtn.textContent = "✕";
+      removeBtn.title = "Remove block";
+      removeBtn.onclick = function() {
+        el.remove();
+        toggleHint();
+      };
+
+      el.appendChild(textSpan);
+      el.appendChild(removeBtn);
+
+      attachWorkspaceDragEvents(el);
+      return el;
+    }
+
+    function toggleHint() {
+      const items = dropZone.querySelectorAll(".workspace-item");
+      dropHint.style.display = items.length === 0 ? "block" : "none";
+    }
+
+    // Desktop Drag & Drop from Palette
+    paletteBlocks.forEach((block) => {
+      block.addEventListener("dragstart", (e) => {
+        draggedItem = block;
+        isFromPalette = true;
+        block.classList.add("dragging");
+        e.dataTransfer.effectAllowed = "copy";
+      });
+
+      block.addEventListener("dragend", ()
