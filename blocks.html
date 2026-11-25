@@ -11,7 +11,7 @@
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      gap: 4px;
+      gap: 6px;
       margin: 1rem 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       font-weight: 600;
@@ -19,12 +19,13 @@
     }
 
     .block {
-      padding: 0.6rem 1rem;
+      padding: 0.65rem 1rem;
       border-radius: 6px;
       color: #ffffff;
       box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
       display: inline-block;
       user-select: none;
+      -webkit-user-select: none;
     }
 
     .block-hat {
@@ -63,24 +64,32 @@
       padding: 1rem;
     }
 
-    .draggable-block {
+    .drag-block {
       display: flex;
       justify-content: space-between;
       align-items: center;
       width: 100%;
       margin-bottom: 0.55rem;
       cursor: grab;
-      touch-action: none;
-      transition: transform 0.12s, opacity 0.12s;
+      touch-action: none; /* Prevents mobile page scroll while dragging a block */
+      transition: opacity 0.12s;
     }
 
-    .draggable-block:active {
+    .drag-block:active {
       cursor: grabbing;
     }
 
-    .draggable-block.dragging {
-      opacity: 0.5;
-      transform: scale(0.98);
+    .drag-block.is-dragging {
+      opacity: 0.4;
+    }
+
+    .drag-ghost {
+      position: fixed;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0.92;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+      transform: scale(1.03);
     }
 
     .drop-zone {
@@ -94,11 +103,11 @@
 
     .drop-zone.drag-over {
       border-color: #58a6ff;
-      background-color: rgba(88, 166, 255, 0.08);
+      background-color: rgba(88, 166, 255, 0.12);
     }
 
     .drop-hint {
-      color: #6e7681;
+      color: #8b949e;
       font-size: 0.85rem;
       font-weight: normal;
       margin-top: 0.5rem;
@@ -106,18 +115,18 @@
     }
 
     .remove-x {
-      background: rgba(0, 0, 0, 0.25);
+      background: rgba(0, 0, 0, 0.3);
       border: none;
       color: #ffffff;
       border-radius: 4px;
-      padding: 0.1rem 0.45rem;
+      padding: 0.15rem 0.5rem;
       margin-left: 0.75rem;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       cursor: pointer;
     }
 
     .remove-x:hover {
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.6);
     }
 
     .stage-output {
@@ -239,22 +248,22 @@
     </div>
 
     <h2>Interactive Drag-and-Drop Block Builder</h2>
-    <p>Drag blocks from the <strong>Block Palette</strong> on the left and drop them under <strong>when ▶ Run clicked</strong> on the right. Drag blocks inside your script up or down to reorder them, then tap <strong>Run Blocks</strong>.</p>
+    <p>Press and drag blocks from <strong>1. Drag Blocks From Here</strong> and drop them inside <strong>2. Drop Blocks Here</strong>. Drag snapped blocks up or down to reorder them, or drag them outside the box to remove them.</p>
 
     <div class="playground-grid">
       <div class="palette-box">
         <h3>1. Drag Blocks From Here</h3>
         <div id="paletteList">
-          <div class="block block-looks draggable-block" draggable="true" data-type="say" data-class="block-looks">
+          <div class="block block-looks drag-block" data-type="say" data-class="block-looks">
             <span>⋮⋮ say "Hello World!"</span>
           </div>
-          <div class="block block-motion draggable-block" draggable="true" data-type="move" data-class="block-motion">
+          <div class="block block-motion drag-block" data-type="move" data-class="block-motion">
             <span>⋮⋮ move 10 steps</span>
           </div>
-          <div class="block block-var draggable-block" draggable="true" data-type="score" data-class="block-var">
+          <div class="block block-var drag-block" data-type="score" data-class="block-var">
             <span>⋮⋮ change score by +10</span>
           </div>
-          <div class="block block-control draggable-block" draggable="true" data-type="repeat" data-class="block-control">
+          <div class="block block-control drag-block" data-type="repeat" data-class="block-control">
             <span>⋮⋮ repeat previous block 2x</span>
           </div>
         </div>
@@ -283,9 +292,6 @@
   <script>
     const dropZone = document.getElementById("dropZone");
     const dropHint = document.getElementById("dropHint");
-    const paletteBlocks = document.querySelectorAll("#paletteList .draggable-block");
-    let draggedItem = null;
-    let isFromPalette = false;
 
     const labels = {
       say: 'say "Hello World!"',
@@ -294,10 +300,14 @@
       repeat: "repeat previous block 2x"
     };
 
+    function toggleHint() {
+      const items = dropZone.querySelectorAll(".workspace-item");
+      dropHint.style.display = items.length === 0 ? "block" : "none";
+    }
+
     function createWorkspaceBlock(type, cssClass) {
       const el = document.createElement("div");
-      el.className = "block " + cssClass + " draggable-block workspace-item";
-      el.draggable = true;
+      el.className = "block " + cssClass + " drag-block workspace-item";
       el.dataset.type = type;
       el.dataset.class = cssClass;
 
@@ -308,30 +318,160 @@
       removeBtn.className = "remove-x";
       removeBtn.textContent = "✕";
       removeBtn.title = "Remove block";
-      removeBtn.onclick = function() {
+      removeBtn.addEventListener("pointerdown", (e) => e.stopPropagation());
+      removeBtn.addEventListener("click", () => {
         el.remove();
         toggleHint();
-      };
+      });
 
       el.appendChild(textSpan);
       el.appendChild(removeBtn);
 
-      attachWorkspaceDragEvents(el);
+      enablePointerDrag(el, false);
       return el;
     }
 
-    function toggleHint() {
-      const items = dropZone.querySelectorAll(".workspace-item");
-      dropHint.style.display = items.length === 0 ? "block" : "none";
+    function getInsertPosition(clientY) {
+      const items = [...dropZone.querySelectorAll(".workspace-item:not(.is-dragging)")];
+      return items.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = clientY - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+          return { offset: offset, element: child };
+        }
+        return closest;
+      }, { offset: Number.NEGATIVE_INFINITY }).element;
     }
 
-    // Desktop Drag & Drop from Palette
-    paletteBlocks.forEach((block) => {
-      block.addEventListener("dragstart", (e) => {
-        draggedItem = block;
-        isFromPalette = true;
-        block.classList.add("dragging");
-        e.dataTransfer.effectAllowed = "copy";
-      });
+    function isInsideDropZone(clientX, clientY) {
+      const rect = dropZone.getBoundingClientRect();
+      return (
+        clientX >= rect.left - 15 &&
+        clientX <= rect.right + 15 &&
+        clientY >= rect.top - 15 &&
+        clientY <= rect.bottom + 15
+      );
+    }
 
-      block.addEventListener("dragend", ()
+    function enablePointerDrag(element, isFromPalette) {
+      element.addEventListener("pointerdown", (e) => {
+        if (e.target.classList.contains("remove-x")) return;
+        e.preventDefault();
+
+        const rect = element.getBoundingClientRect();
+        const offsetX = e.clientX - rect.left;
+        const offsetY = e.clientY - rect.top;
+
+        // Create floating visual clone that follows finger/mouse
+        const ghost = element.cloneNode(true);
+        ghost.classList.add("drag-ghost");
+        ghost.style.width = rect.width + "px";
+        ghost.style.left = (e.clientX - offsetX) + "px";
+        ghost.style.top = (e.clientY - offsetY) + "px";
+        document.body.appendChild(ghost);
+
+        element.classList.add("is-dragging");
+        element.setPointerCapture(e.pointerId);
+
+        function onPointerMove(moveEvent) {
+          ghost.style.left = (moveEvent.clientX - offsetX) + "px";
+          ghost.style.top = (moveEvent.clientY - offsetY) + "px";
+
+          if (isInsideDropZone(moveEvent.clientX, moveEvent.clientY)) {
+            dropZone.classList.add("drag-over");
+          } else {
+            dropZone.classList.remove("drag-over");
+          }
+        }
+
+        function onPointerUp(upEvent) {
+          element.releasePointerCapture(upEvent.pointerId);
+          element.removeEventListener("pointermove", onPointerMove);
+          element.removeEventListener("pointerup", onPointerUp);
+          element.removeEventListener("pointercancel", onPointerUp);
+
+          ghost.remove();
+          element.classList.remove("is-dragging");
+          dropZone.classList.remove("drag-over");
+
+          if (isInsideDropZone(upEvent.clientX, upEvent.clientY)) {
+            const afterEl = getInsertPosition(upEvent.clientY);
+            const targetBlock = isFromPalette
+              ? createWorkspaceBlock(element.dataset.type, element.dataset.class)
+              : element;
+
+            if (afterEl == null) {
+              dropZone.appendChild(targetBlock);
+            } else {
+              dropZone.insertBefore(targetBlock, afterEl);
+            }
+            toggleHint();
+          } else if (!isFromPalette) {
+            // Dragging an existing block outside the drop zone removes it
+            element.remove();
+            toggleHint();
+          }
+        }
+
+        element.addEventListener("pointermove", onPointerMove);
+        element.addEventListener("pointerup", onPointerUp);
+        element.addEventListener("pointercancel", onPointerUp);
+      });
+    }
+
+    // Initialize dragging for all palette blocks
+    document.querySelectorAll("#paletteList .drag-block").forEach((block) => {
+      enablePointerDrag(block, true);
+    });
+
+    function clearBlocks() {
+      dropZone.querySelectorAll(".workspace-item").forEach((el) => el.remove());
+      toggleHint();
+      document.getElementById("stageOutput").textContent = 'Stage Output: Drag blocks into your script and tap "Run Blocks"...';
+    }
+
+    function runBlocks() {
+      const output = document.getElementById("stageOutput");
+      const items = [...dropZone.querySelectorAll(".workspace-item")];
+
+      if (items.length === 0) {
+        output.textContent = "Stage Output: Drag and drop at least one block under 'when ▶ Run clicked' first!";
+        return;
+      }
+
+      let steps = 0;
+      let score = 0;
+      let logs = [];
+
+      function executeAction(type) {
+        if (type === "say") {
+          logs.push('Character says: "Hello World!"');
+        } else if (type === "move") {
+          steps += 10;
+          logs.push("Character moved 10 steps (Total position: " + steps + ")");
+        } else if (type === "score") {
+          score += 10;
+          logs.push("Score increased by 10 (Current score: " + score + ")");
+        }
+      }
+
+      for (let i = 0; i < items.length; i++) {
+        const currentType = items[i].dataset.type;
+        if (currentType === "repeat") {
+          if (i > 0 && items[i - 1].dataset.type !== "repeat") {
+            logs.push("--- Repeating previous block 2 times ---");
+            executeAction(items[i - 1].dataset.type);
+            executeAction(items[i - 1].dataset.type);
+          } else {
+            logs.push("(Place a block above 'repeat' to repeat it!)");
+          }
+        } else {
+          executeAction(currentType);
+        }
+      }
+
+      output.innerHTML = "<strong>Execution Log:</strong><br>" + logs.join("<br>");
+    }
+  </script>
+</body>
+</html>
