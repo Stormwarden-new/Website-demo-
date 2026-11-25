@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Editor | CodeHub</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .editor-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      align-items: center;
+    }
+
+    .editor-controls input,
+    .editor-controls select {
+      background-color: #161b22;
+      color: #e6edf3;
+      border: 1px solid #30363d;
+      padding: 0.6rem 0.8rem;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+
+    .editor-controls input {
+      flex: 1;
+      min-width: 160px;
+    }
+
+    .code-area {
+      width: 100%;
+      min-height: 320px;
+      background-color: #161b22;
+      color: #a5d6ff;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: Consolas, Monaco, "Courier New", monospace;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      resize: vertical;
+      tab-size: 4;
+    }
+
+    .code-area:focus {
+      outline: none;
+      border-color: #58a6ff;
+    }
+
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .btn {
+      padding: 0.65rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background-color: #238636;
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background-color: #2ea043;
+    }
+
+    .btn-secondary {
+      background-color: #21262d;
+      color: #c9d1d9;
+      border: 1px solid #30363d;
+    }
+
+    .btn-secondary:hover {
+      border-color: #58a6ff;
+      color: #ffffff;
+    }
+
+    .status-msg {
+      margin-top: 0.75rem;
+      font-size: 0.9rem;
+      color: #3fb950;
+      min-height: 1.4rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="index.html" class="logo">CodeHub</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="python.html">Python</a></li>
+        <li><a href="c.html">C</a></li>
+        <li><a href="cpp.html">C++</a></li>
+        <li><a href="pascal.html">Pascal</a></li>
+        <li><a href="errors.html">Errors &amp; Debugging</a></li>
+        <li><a href="editor.html" class="active">Code Editor</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Code Editor &amp; File Saver</h1>
+    <p>Write your own program below, choose your language extension, and download it directly to your device. Once saved, you own the file and can move it to a flash drive, email it, or open it in any compiler.</p>
+
+    <div class="editor-controls">
+      <input type="text" id="filename" value="my_program" placeholder="Enter file name">
+      <select id="language" onchange="loadTemplate()">
+        <option value=".py">Python (.py)</option>
+        <option value=".c">C (.c)</option>
+        <option value=".cpp">C++ (.cpp)</option>
+        <option value=".pas">Pascal (.pas)</option>
+        <option value=".txt">Plain Text (.txt)</option>
+      </select>
+    </div>
+
+    <textarea id="codeEditor" class="code-area" spellcheck="false" placeholder="Write your code here..."># Write your Python code here
+print("Hello from CodeHub!")</textarea>
+
+    <div class="button-group">
+      <button class="btn btn-primary" onclick="downloadCode()">Download File</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('fileInput').click()">Open Existing File</button>
+      <button class="btn btn-secondary" onclick="copyCode()">Copy Code</button>
+      <button class="btn btn-secondary" onclick="clearEditor()">Clear</button>
+      <input type="file" id="fileInput" style="display:none" accept=".py,.c,.cpp,.pas,.txt" onchange="openFile(event)">
+    </div>
+
+    <p id="statusMsg" class="status-msg"></p>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 CodeHub &mdash; Browser Code Editor</p>
+  </footer>
+
+  <script>
+    const templates = {
+      ".py": '# Python Program\nprint("Hello from CodeHub!")\n',
+      ".c": '#include <stdio.h>\n\nint main() {\n    printf("Hello from CodeHub!\\n");\n    return 0;\n}\n',
+      ".cpp": '#include <iostream>\n\nint main() {\n    std::cout << "Hello from CodeHub!" << std::endl;\n    return 0;\n}\n',
+      ".pas": "program MyProgram;\nbegin\n  writeln('Hello from CodeHub!');\nend.\n",
+      ".txt": "Write your notes or pseudocode here...\n"
+    };
+
+    function showStatus(text) {
+      const msg = document.getElementById("statusMsg");
+      msg.textContent = text;
+      setTimeout(() => { msg.textContent = ""; }, 4000);
+    }
+
+    function loadTemplate() {
+      const ext = document.getElementById("language").value;
+      const editor = document.getElementById("codeEditor");
+      if (editor.value.trim() === "" || Object.values(templates).includes(editor.value)) {
+        editor.value = templates[ext];
+      }
+    }
+
+    function downloadCode() {
+      const code = document.getElementById("codeEditor").value;
+      let name = document.getElementById("filename").value.trim() || "my_program";
+      const ext = document.getElementById("language").value;
+
+      // Remove extension if user already typed it
+      if (name.endsWith(ext)) {
+        name = name.slice(0, -ext.length);
+      }
+
+      const fullFilename = name + ext;
+      const blob = new Blob([code], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fullFilename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      showStatus("Saved '" + fullFilename + "' to your device downloads!");
+    }
+
+    function openFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById("codeEditor").value = e.target.result;
+        document.getElementById("filename").value = file.name.replace(/\.[^/.]+$/, "");
+        showStatus("Loaded '" + file.name + "' into the editor.");
+      };
+      reader.readAsText(file);
+    }
+
+    function copyCode() {
+      const editor = document.getElementById("codeEditor");
+      navigator.clipboard.writeText(editor.value);
+      showStatus("Code copied to clipboard!");
+    }
+
+    function clearEditor() {
+      document.getElementById("codeEditor").value = "";
+      showStatus("Editor cleared.");
+    }
+
+    // Allow Tab key indentation inside the textarea
+    document.getElementById("codeEditor").addEventListener("keydown", function(e) {
+      if (e.key === "Tab") {
+        e.preventDefault();
+        const start = this.selectionStart;
+        const end = this.selectionEnd;
+        this.value = this.value.substring(0, start) + "    " + this.value.substring(end);
+        this.selectionStart = this.selectionEnd = start + 4;
+      }
+    });
+  </script>
+</body>
+</html>
