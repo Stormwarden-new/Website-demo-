@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Editor &amp; Code Inspector | CodeHub</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .editor-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      align-items: center;
+    }
+
+    .editor-controls input,
+    .editor-controls select {
+      background-color: #161b22;
+      color: #e6edf3;
+      border: 1px solid #30363d;
+      padding: 0.6rem 0.8rem;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+
+    .editor-controls input {
+      flex: 1;
+      min-width: 160px;
+    }
+
+    .editor-wrapper {
+      display: flex;
+      background-color: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      overflow: hidden;
+      height: 360px;
+    }
+
+    .editor-wrapper:focus-within {
+      border-color: #58a6ff;
+    }
+
+    .line-numbers {
+      width: 48px;
+      padding: 1rem 0.6rem 1rem 0.25rem;
+      background-color: #0d1117;
+      border-right: 1px solid #30363d;
+      color: #6e7681;
+      font-family: Consolas, Monaco, "Courier New", monospace;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      text-align: right;
+      user-select: none;
+      overflow: hidden;
+      white-space: pre;
+    }
+
+    .code-area {
+      flex: 1;
+      background-color: #161b22;
+      color: #a5d6ff;
+      border: none;
+      padding: 1rem;
+      font-family: Consolas, Monaco, "Courier New", monospace;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      resize: none;
+      tab-size: 4;
+      white-space: pre;
+      overflow-x: auto;
+      overflow-y: auto;
+    }
+
+    .code-area:focus {
+      outline: none;
+    }
+
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .btn {
+      padding: 0.65rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-inspect {
+      background-color: #1f6feb;
+      color: #ffffff;
+    }
+
+    .btn-inspect:hover {
+      background-color: #388bfd;
+    }
+
+    .btn-primary {
+      background-color: #238636;
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background-color: #2ea043;
+    }
+
+    .btn-secondary {
+      background-color: #21262d;
+      color: #c9d1d9;
+      border: 1px solid #30363d;
+    }
+
+    .btn-secondary:hover {
+      border-color: #58a6ff;
+      color: #ffffff;
+    }
+
+    .status-msg {
+      margin-top: 0.75rem;
+      font-size: 0.9rem;
+      color: #3fb950;
+      min-height: 1.4rem;
+    }
+
+    /* Optional AI Key Panel */
+    .ai-settings {
+      background-color: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      margin-top: 0.75rem;
+    }
+
+    .ai-settings summary {
+      cursor: pointer;
+      color: #8b949e;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .api-key-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+
+    .api-key-row input {
+      flex: 1;
+      min-width: 200px;
+      background-color: #0d1117;
+      color: #e6edf3;
+      border: 1px solid #30363d;
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+    }
+
+    /* Feedback Report Panel */
+    .inspector-box {
+      background-color: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin-top: 1.25rem;
+      display: none;
+    }
+
+    .inspector-box.pass {
+      border-left: 5px solid #238636;
+    }
+
+    .inspector-box.fail {
+      border-left: 5px solid #da3633;
+    }
+
+    .verdict-badge {
+      display: inline-block;
+      padding: 0.3rem 0.75rem;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .verdict-pass {
+      background-color: rgba(35, 134, 54, 0.2);
+      color: #3fb950;
+      border: 1px solid #238636;
+    }
+
+    .verdict-fail {
+      background-color: rgba(218, 54, 51, 0.2);
+      color: #ff7b72;
+      border: 1px solid #da3633;
+    }
+
+    .feedback-section-title {
+      color: #ffffff;
+      font-size: 1.05rem;
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+      border-bottom: 1px solid #30363d;
+      padding-bottom: 0.25rem;
+    }
+
+    .issue-item {
+      background-color: #0d1117;
+      border: 1px solid #30363d;
+      border-left: 3px solid #da3633;
+      border-radius: 6px;
+      padding: 0.85rem;
+      margin-top: 0.65rem;
+    }
+
+    .issue-item strong {
+      color: #ff7b72;
+    }
+
+    .fix-tip {
+      color: #3fb950;
+      margin-top: 0.35rem;
+      display: block;
+    }
+
+    .improve-item {
+      background-color: #0d1117;
+      border: 1px solid #30363d;
+      border-left: 3px solid #58a6ff;
+      border-radius: 6px;
+      padding: 0.85rem;
+      margin-top: 0.65rem;
+    }
+
+    .improve-item strong {
+      color: #58a6ff;
+    }
+
+    .ai-response-text {
+      white-space: pre-wrap;
+      line-height: 1.6;
+      color: #e6edf3;
+      margin-top: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="index.html" class="logo">CodeHub</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="blocks.html">Block Coding</a></li>
+        <li><a href="python.html">Python</a></li>
+        <li><a href="c.html">C</a></li>
+        <li><a href="cpp.html">C++</a></li>
+        <li><a href="pascal.html">Pascal</a></li>
+        <li><a href="errors.html">Errors &amp; Debugging</a></li>
+        <li><a href="editor.html" class="active">Code Editor</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Code Editor &amp; Code Inspector</h1>
+    <p>Write your program in the numbered editor below. Tap <strong>Inspect Code</strong> to receive instant feedback on errors, fixes, and code improvements, or download your finished file to store and transfer it anywhere.</p>
+
+    <div class="editor-controls">
+      <input type="text" id="filename" value="my_program" placeholder="Enter file name">
+      <select id="language" onchange="loadTemplate()">
+        <option value=".py">Python (.py)</option>
+        <option value=".c">C (.c)</option>
+        <option value=".cpp">C++ (.cpp)</option>
+        <option value=".pas">Pascal (.pas)</option>
+        <option value=".txt">Plain Text (.txt)</option>
+      </select>
+    </div>
+
+    <div class="editor-wrapper">
+      <div id="lineNumbers" class="line-numbers">1</div>
+      <textarea id="codeEditor" class="code-area" spellcheck="false" placeholder="Write your code here..."># Write your Python code here
+print("Hello from CodeHub!")</textarea>
+    </div>
+
+    <div class="button-group">
+      <button class="btn btn-inspect" onclick="inspectCode()">🔍 Inspect Code (Errors &amp; Improvements)</button>
+      <button class="btn btn-primary" onclick="downloadCode()">Download File</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('fileInput').click()">Open Existing File</button>
+      <button class="btn btn-secondary" onclick="copyCode()">Copy Code</button>
+      <button class="btn btn-secondary" onclick="clearEditor()">Clear</button>
+      <input type="file" id="fileInput" style="display:none" accept=".py,.c,.cpp,.pas,.txt" onchange="openFile(event)">
+    </div>
+
+    <details class="ai-settings">
+      <summary>⚙️ Optional: Connect a Free Gemini API Key for Deep AI Code Coaching</summary>
+      <p style="font-size: 0.85rem; margin-top: 0.5rem; color: #8b949e;">The built-in inspector works automatically with zero setup. If you want conversational AI feedback and full code rewrites, paste your own free Google AI Studio key below (saved only on your device).</p>
+      <div class="api-key-row">
+        <input type="password" id="geminiApiKey" placeholder="Paste Gemini API Key (AIza...)">
+        <button class="btn btn-secondary" onclick="saveApiKey()">Save Key</button>
+      </div>
+    </details>
+
+    <p id="statusMsg" class="status-msg"></p>
+
+    <div id="inspectorBox" class="inspector-box"></div>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 CodeHub &mdash; Browser Code Editor &amp; Inspector</p>
+  </footer>
+
+  <script>
+    const editor = document.getElementById("codeEditor");
+    const lineNumbers = document.getElementById("lineNumbers");
+    const inspectorBox = document.getElementById("inspectorBox");
+
+    document.getElementById("geminiApiKey").value = localStorage.getItem("codehub_gemini_key") || "";
+
+    const templates = {
+      ".py": '# Python Program\nprint("Hello from CodeHub!")\n',
+      ".c": '#include <stdio.h>\n\nint main() {\n    printf("Hello from CodeHub!\\n");\n    return 0;\n}\n',
+      ".cpp": '#include <iostream>\n\nint main() {\n    std::cout << "Hello from CodeHub!" << std::endl;\n    return 0;\n}\n',
+      ".pas": "program MyProgram;\nbegin\n  writeln('Hello from CodeHub!');\nend.\n",
+      ".txt": "Write your notes or pseudocode here...\n"
+    };
+
+    function updateLineNumbers() {
+      const totalLines = editor.value.split("\n").length;
+      let numbers = "";
+      for (let i = 1; i <= totalLines; i++) {
+        numbers += i + "\n";
+      }
+      lineNumbers.textContent = numbers;
+    }
+
+    editor.addEventListener("scroll", () => {
+      lineNumbers.scrollTop = editor.scrollTop;
+    });
+
+    editor.addEventListener("input", updateLineNumbers);
+
+    function showStatus(text) {
+      const msg = document.getElementById("statusMsg");
+      msg.textContent = text;
+      setTimeout(() => { msg.textContent = ""; }, 4000);
+    }
+
+    function saveApiKey() {
+      const key = document.getElementById("geminiApiKey").value.trim();
+      localStorage.setItem("codehub_gemini_key", key);
+      showStatus(key ? "Gemini API key saved locally in your browser!" : "API key cleared.");
+    }
+
+    function loadTemplate() {
+      const ext = document.getElementById("language").value;
+      if (editor.value.trim() === "" || Object.values(templates).includes(editor.value)) {
+        editor.value = templates[ext];
+        updateLineNumbers();
+      }
+      inspectorBox.style.display = "none";
+    }
+
+    function analyzeCode(code, ext) {
+      const errors = [];
+      const improvements = [];
+      const lines = code.split("\n");
+
+      if (code.trim() === "") {
+        errors.push({
+          type: "Empty Program",
+          line: 1,
+          message: "There is no code in the editor to inspect.",
+          fix: "Write some code or switch the language dropdown to load a starter template."
+        });
+        return { errors, improvements };
+      }
+
+      // 1. Universal Bracket & Quote Checks
+      const stack = [];
+      const pairs = { "(": ")", "[": "]", "{": "}" };
+      let hasComments = false;
+
+      lines.forEach((line, idx) => {
+        const lineNum = idx + 1;
+        let clean = line;
+
+        if (ext === ".py") {
+          if (line.includes("#")) hasComments = true;
+          clean = clean.split("#")[0];
+        } else if (ext === ".c" || ext === ".cpp") {
+          if (line.includes("//") || line.includes("/*")) hasComments = true;
+          clean = clean.split("//")[0];
+        } else if (ext === ".pas") {
+          if (line.includes("{") || line.includes("(*")) hasComments = true;
+        }
+
+        const doubleQuotes = (clean.match(/"/g) || []).length;
+        const singleQuotes = (clean.match(/'/g) || []).length;
+
+        if (doubleQuotes % 2 !== 0) {
+          errors.push({
+            type: "Syntax Error (Unclosed String)",
+            line: lineNum,
+            message: 'Missing closing double quote (") on line ' + lineNum + '.',
+            fix: 'Place a matching " at the end of your text string on line ' + lineNum + '.'
+          });
+        }
+
+        if (ext === ".pas" && singleQuotes % 2 !== 0) {
+          errors.push({
+            type: "Syntax Error (Unclosed String)",
+            line: lineNum,
+            message: "Missing closing single quote (') on line " + lineNum + ".",
+            fix: "Place a matching ' at the end of your string on line " + lineNum + "."
+          });
+        }
+
+        if (/\/\s*0(?![.\d])/.test(clean)) {
+          errors.push({
+            type: "Run-Time Error (Division by Zero)",
+            line: lineNum,
+            message: "Dividing by 0 on line " + lineNum + " will crash your program when it runs.",
+            fix: "Replace 0 with a non-zero divisor or add an `if` check before dividing."
+          });
+        }
+
+        // Check brackets (skip curly braces in Pascal since Pascal uses {} for comments)
+        for (let char of clean) {
+          if (ext === ".pas" && (char === "{" || char === "}")) continue;
+          if (pairs[char]) {
+            stack.push({ char, line: lineNum });
+          } else if (char === ")" || char === "]" || char === "}") {
+            const last = stack.pop();
+            if (!last || pairs[last.char] !== char) {
+              errors.push({
+                type: "Syntax Error (Unmatched Bracket)",
+                line: lineNum,
+                message: "Unexpected closing '" + char + "' on line " + lineNum + ".",
+                fix: "Delete the extra '" + char + "' or add its matching opening bracket earlier."
+              });
+            }
+          }
+        }
+      });
+
+      stack.forEach((unclosed) => {
+        errors.push({
+          type: "Syntax Error (Unclosed Bracket)",
+          line: unclosed.line,
+          message: "Opening '" + unclosed.char + "' on line " + unclosed.line + " was never closed.",
+          fix: "Add '" + pairs[unclosed.char] + "' where that block or expression ends."
+        });
+      });
+
+      // 2. Language-Specific Error & Improvement Checks
+      if (ext === ".py") {
+        lines.forEach((line, idx) => {
+          const trimmed = line.trim();
+          const lineNum = idx + 1;
+          if (!trimmed || trimmed.startsWith("#")) return;
+
+          if (/^(if|elif|else|for|while|def|class)\b/.test(trimmed) && !trimmed.endsWith(":")) {
+            errors.push({
+              type: "Syntax Error (Missing Colon)",
+              line: lineNum,
+              message: "Line " + lineNum + " starts a block (`" + trimmed.split(" ")[0] + "`) without a colon (:).",
+              fix: "Add `:` to the end of line " + lineNum + "."
+            });
+          }
+
+          if (trimmed.endsWith(":") && idx + 1 < lines.length) {
+            const nextLine = lines[idx + 1];
+            if (nextLine.trim() !== "" && !nextLine.startsWith(" ") && !nextLine.startsWith("\t")) {
+              errors.push({
+                type: "IndentationError",
+                line: lineNum + 1,
+                message: "Line " + (lineNum + 1) + " must be indented after the colon on line " + lineNum + ".",
+                fix: "Press Tab or add 4 spaces at the beginning of line " + (lineNum + 1) + "."
+              });
+            }
+          }
+
+          if (trimmed.endsWith(";")) {
+            improvements.push({
+              title: "Remove Unnecessary Semicolon (Line " + lineNum + ")",
+              detail: "Python does not require semicolons at the end of lines. Removing `;` makes your code cleaner and follows PEP 8 style guidelines."
+            });
+          }
+        });
+
+        if (/print\s*\(\s*["'].*["']\s*\+\s*/.test(code)) {
+          improvements.push({
+            title: "Use Python f-Strings for Cleaner Output",
+            detail: 'Instead of joining text with `+`, use an f-string like `print(f"Value: {variable}")`—it is easier to read and automatically converts numbers to text.'
+          });
+        }
+      }
+
+      if (ext === ".c" || ext === ".cpp") {
+        if (!/int\s+main\s*\(/.test(code)) {
+          errors.push({
+            type: "Structure Error (Missing main)",
+            line: 1,
+            message: "No `int main()` function found. The compiler needs `main()` to know where to start.",
+            fix: "Wrap your instructions inside `int main() { ... return 0; }`."
+          });
+        }
+
+        if (ext === ".c" && /printf\s*\(/.test(code) && !/#include\s*<stdio\.h>/.test(code)) {
+          errors.push({
+            type: "Missing Header File",
+            line: 1,
+            message: "`printf()` requires the standard input/output header.",
+            fix: "Add `#include <stdio.h>` at the very top of your file."
+          });
+        }
+
+        if (ext === ".cpp" && /(cout|cin)/.test(code) && !/#include\s*<iostream>/.test(code)) {
+          errors.push({
+            type: "Missing Header File",
+            line: 1,
+            message: "`cout` or `cin` requires the `<iostream>` library.",
+            fix: "Add `#include <iostream>` at the very top of your file."
+          });
+        }
+
+        lines.forEach((line, idx) => {
+          const clean = line.split("//")[0].trim();
+          const lineNum = idx + 1;
+          if (!clean) return;
+          if (
+            !clean.startsWith("#") &&
+            !clean.endsWith(";") &&
+            !clean.endsWith("{") &&
+            !clean.endsWith("}") &&
+            !clean.endsWith(":") &&
+            !/^(if|else|for|while|switch)\b/.test(clean)
+          ) {
+            errors.push({
+              type: "Syntax Error (Missing Semicolon)",
+              line: lineNum,
+              message: "Statement on line " + lineNum + " is missing a semicolon (`;`).",
+              fix: "Add `;` at the end of line " + lineNum + "."
+            });
+          }
+        });
+
+        if (/int\s+main\s*\(/.test(code) && !/return\s+0\s*;/.test(code)) {
+          improvements.push({
+            title: "Explicitly Return 0 in main()",
+            detail: "Adding `return 0;` before the closing `}` of `main()` clearly signals to the operating system that your program finished without errors."
+          });
+        }
+
+        if (ext === ".cpp" && /using\s+namespace\s+std\s*;/.test(code)) {
+          improvements.push({
+            title: "Avoid `using namespace std;` in Larger Projects",
+            detail: "Writing `std::cout` and `std::string` explicitly prevents naming conflicts as your C++ programs grow larger."
+          });
+        }
+      }
+
+      if (ext === ".pas") {
+        if (!/\bprogram\b/i.test(code)) {
+          improvements.push({
+            title: "Add a Program Header",
+            detail: "Starting your Pascal file with `program MyProgram;` at line 1 improves readability and documents the file's purpose."
+          });
+        }
+        if (!/\bbegin\b/i.test(code)) {
+          errors.push({
+            type: "Syntax Error (Missing begin)",
+            line: 1,
+            message: "Pascal requires a `begin` keyword before executable statements.",
+            fix: "Add `begin` above your code statements."
+          });
+        }
+        if (!/\bend\.\s*$/i.test(code.trim())) {
+          errors.push({
+            type: "Syntax Error (Missing end.)",
+            line: lines.length,
+            message: "Pascal programs must end with `end.` (with a period).",
+            fix: "Add `end.` on the final line of your program."
+          });
+        }
+        lines.forEach((line, idx) => {
+          const clean = line.trim();
+          const lineNum = idx + 1;
+          if (/^(writeln|write|readln|read)\s*\(/i.test(clean) && !clean.endsWith(";")) {
+            errors.push({
+              type: "Syntax Error (Missing Semicolon)",
+              line: lineNum,
+              message: "Statement on line " + lineNum + " is missing a semicolon (`;`).",
+              fix: "Add `;` at the end of line " + lineNum + "."
+            });
+          }
+        });
+      }
+
+      // 3. General Code Quality Improvements
+      if (!hasComments && lines.length >= 4 && ext !== ".txt") {
+        improvements.push({
+          title: "Add Explanatory Comments",
+          detail: "Your program has no comments yet. Adding short notes explaining what key sections do makes it much easier to debug and share later."
+        });
+      }
+
+      if (/\b[a-z]\b\s*=/.test(code) && !/for\s*\(?\s*[ijk]\b/.test(code)) {
+        improvements.push({
+          title: "Use Descriptive Variable Names",
+          detail: "Single-letter variable names (like `x` or `a`) make logic harder to follow. Rename them to clear nouns like `userScore` or `totalPrice`."
+        });
+      }
+
+      if (improvements.length === 0 && errors.length === 0) {
+        improvements.push({
+          title: "Clean Structure & Readability",
+          detail: "Your code is well-formatted, concise, and follows standard syntax conventions. Consider testing edge cases (such as negative numbers or empty inputs) next."
+        });
+      }
+
+      return { errors, improvements };
+    }
+
+    async function inspectCode() {
+      const code = editor.value;
+      const ext = document.getElementById("language").value;
+      const apiKey = document.getElementById("geminiApiKey").value.trim();
+
+      inspectorBox.style.display = "block";
+      inspectorBox.className = "inspector-box";
+      inspectorBox.innerHTML = "<p>🔍 Analyzing your code for errors and improvements...</p>";
+
+      // Optional Live Gemini AI Feedback if user entered an API Key
+      if (apiKey) {
+        try {
+          const langNames = { ".py": "Python", ".c": "C", ".cpp": "C++", ".pas": "Pascal", ".txt": "Plain Text" };
+          const prompt = `You are a supportive programming mentor. Inspect this ${langNames[ext]} code:\n\n\`\`\`\n${code}\n\`\`\`\n\nProvide:\n1. WILL IT RUN? (YES or NO)\n2. ERRORS & FIXES: Any syntax, logic, or runtime errors with exact line numbers and how to fix them.\n3. IMPROVEMENTS: 2-3 actionable suggestions to make the code cleaner, safer, or more efficient, plus an improved version of the code.`;
+
+          const response = await fetch(
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + encodeURIComponent(apiKey),
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            }
+          );
+
+          const data = await response.json();
+          if (data.error) throw new Error(data.error.message);
+
+          const aiText = data.candidates[0].content.parts[0].text;
+          const willRun = /WILL IT RUN\?:\s*YES|WILL IT RUN\?\s*YES/i.test(aiText);
+
+          inspectorBox.classList.add(willRun ? "pass" : "fail");
+          inspectorBox.innerHTML = `
+            <span class="verdict-badge ${willRun ? "verdict-pass" : "verdict-fail"}">
+              ${willRun ? "✅ AI Inspection: Ready to Run" : "❌ AI Inspection: Errors Detected"}
+            </span>
+            <div class="ai-response-text">${escapeHtml(aiText)}</div>
+          `;
+          return;
+        } catch (err) {
+          inspectorBox.classList.add("fail");
+          inspectorBox.innerHTML = `<p style="color:#ff7b72;">AI Connection Note: ${escapeHtml(err.message)}. Running built-in code inspector instead...</p>`;
+        }
+      }
+
+      // Built-in Error & Improvement Analysis
+      const { errors, improvements } = analyzeCode(code, ext);
+      const passed = errors.length === 0;
+
+      inspectorBox.classList.add(passed ? "pass" : "fail");
+
+      let html = `
+        <span class="verdict-badge ${passed ? "verdict-pass" : "verdict-fail"}">
+          ${passed ? "✅ Will It Run? YES — No Errors Found" : "❌ Will It Run? NO — " + errors.length + " Error(s) Found"}
+        </span>
+      `;
+
+      if (!passed) {
+        html += `<div class="feedback-section-title">🚨 Errors &amp; How to Fix Them</div>`;
+        errors.forEach((err) => {
+          html += `
+            <div class="issue-item">
+              <strong>Line ${err.line} &bull; ${escapeHtml(err.type)}</strong>
+              <p style="margin: 0.35rem 0 0 0;">${escapeHtml(err.message)}</p>
+              <span class="fix-tip">💡 Fix: ${escapeHtml(err.fix)}</span>
+            </div>
+          `;
+        });
+      }
+
+      html += `<div class="feedback-section-title">✨ Suggested Improvements</div>`;
+      improvements.forEach((imp) => {
+        html += `
+          <div class="improve-item">
+            <strong>${escapeHtml(imp.title)}</strong>
+            <p style="margin: 0.35rem 0 0 0;">${escapeHtml(imp.detail)}</p>
+          </div>
+        `;
+      });
+
+      inspectorBox.innerHTML = html;
+    }
+
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function downloadCode() {
+      const code = editor.value;
+      let name = document.getElementById("filename").value.trim() || "my_program";
+      const ext = document.getElementById("language").value;
+
+      if (name.endsWith(ext)) {
+        name = name.slice(0, -ext.length);
+      }
+
+      const fullFilename = name + ext;
+      const blob = new Blob([code], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fullFilename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      showStatus("Saved '" + fullFilename + "' to your device downloads!");
+    }
+
+    function openFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        editor.value = e.target.result;
+        document.getElementById("filename").value = file.name.replace(/\.[^/.]+$/, "");
+        updateLineNumbers();
+        inspectorBox.style.display = "none";
+        showStatus("Loaded '" + file.name + "' into the editor.");
+      };
+      reader.readAsText(file);
+    }
+
+    function copyCode() {
+      navigator.clipboard.writeText(editor.value);
+      showStatus("Code copied to clipboard!");
+    }
+
+    function clearEditor() {
+      editor.value = "";
+      updateLineNumbers();
+      inspectorBox.style.display = "none";
+      showStatus("Editor cleared.");
+    }
+
+    editor.addEventListener("keydown", function(e) {
+      if (e.key === "Tab") {
+        e.preventDefault();
+        const start = this.selectionStart;
+        const end = this.selectionEnd;
+        this.value = this.value.substring(0, start) + "    " + this.value.substring(end);
+        this.selectionStart = this.selectionEnd = start + 4;
+        updateLineNumbers();
+      }
+    });
+
+    updateLineNumbers();
+  </script>
+</body>
+</html>
